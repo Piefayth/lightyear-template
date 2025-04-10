@@ -1,8 +1,9 @@
 use avian3d::{PhysicsPlugins, prelude::PhysicsInterpolationPlugin};
 use bevy::prelude::*;
 use lightyear::prelude::{
+    PreSpawnedPlayerObject, ReplicationGroup,
     client::{Interpolated, Predicted, VisualInterpolateStatus},
-    server::ReplicationTarget, PreSpawnedPlayerObject, ReplicationGroup,
+    server::ReplicationTarget,
 };
 use mygame_assets::AssetPlugin;
 use mygame_protocol::ProtocolPlugin;
@@ -26,8 +27,11 @@ impl Plugin for CommonPlugin {
     }
 }
 
-
 pub const REPLICATION_GROUP_PREDICTED: ReplicationGroup = ReplicationGroup::new_id(42);
 
-pub type Simulated = Or<(With<Predicted>, With<PreSpawnedPlayerObject>, With<ReplicationTarget>)>;
+pub type Simulated = Or<(
+    With<Predicted>,
+    With<PreSpawnedPlayerObject>,
+    With<ReplicationTarget>,
+)>;
 pub type Rendered = Or<(Simulated, With<Interpolated>)>;

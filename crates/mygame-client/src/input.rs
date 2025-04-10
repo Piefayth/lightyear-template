@@ -1,6 +1,8 @@
 use bevy::prelude::*;
 use leafwing_input_manager::{
-    plugin::InputManagerPlugin, prelude::{ActionState, InputMap, VirtualDPad}, Actionlike
+    Actionlike,
+    plugin::InputManagerPlugin,
+    prelude::{ActionState, InputMap, VirtualDPad},
 };
 use mygame_common::Simulated;
 use mygame_protocol::input::NetworkedInput;
