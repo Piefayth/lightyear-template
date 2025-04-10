@@ -36,8 +36,6 @@ fn add_player_gameplay_components(
         commands.entity(player_entity).insert((
             RigidBody::Kinematic,
             Collider::capsule(3.0, 4.0),
-            InputMap::<NetworkedInput>::default()
-                .with_dual_axis(NetworkedInput::Move, VirtualDPad::wasd()),
             SceneRoot(global_assets.character.clone()),
         ));
     }

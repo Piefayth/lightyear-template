@@ -233,13 +233,12 @@ pub fn run() {
                 .with_protocol_id(shared_launch_options.protocol_id)
                 .with_key(shared_launch_options.key);
 
-            let webtransport_identity = load_certificate_from_files(
+            let maybe_webtransport_identity = load_certificate_from_files(
                 Path::new(&server_launch_options.webtransport_cert_path),
                 Path::new(&server_launch_options.webtransport_key_path),
-            )
-            .unwrap();
+            );
 
-            let net_configs = vec![
+            let mut net_configs = vec![
                 ServerNetConfig::Netcode {
                     // normal udp sockets for desktop
                     config: server_netcode_config.clone(),
@@ -264,19 +263,26 @@ pub fn run() {
                     })
                     .with_conditioner(server_launch_options.conditioner.clone()),
                 },
-                ServerNetConfig::Netcode {
-                    // webtransport
-                    config: server_netcode_config.clone(),
-                    io: ServerIoConfig::from_transport(ServerTransport::WebTransportServer {
-                        server_addr: SocketAddr::new(
-                            IpAddr::V4(server_launch_options.listen_addr),
-                            server_launch_options.webtransport_listen_port,
-                        ),
-                        certificate: webtransport_identity,
-                    })
-                    .with_conditioner(server_launch_options.conditioner.clone()),
-                },
             ];
+
+            match maybe_webtransport_identity {
+                Ok(webtransport_identity) => {
+                    net_configs.push(ServerNetConfig::Netcode {
+                        config: server_netcode_config.clone(),
+                        io: ServerIoConfig::from_transport(ServerTransport::WebTransportServer {
+                            server_addr: SocketAddr::new(
+                                IpAddr::V4(server_launch_options.listen_addr),
+                                server_launch_options.webtransport_listen_port,
+                            ),
+                            certificate: webtransport_identity,
+                        })
+                        .with_conditioner(server_launch_options.conditioner.clone()),
+                    });
+                },
+                Err(e) => {
+                    eprintln!("WARNING - Skipping WebTransport setup; unable to load cert.pem and key.pem due to {}", e);
+                }
+            }
 
             let server_config = ServerConfig {
                 shared: shared_config,
@@ -301,46 +307,51 @@ pub fn run() {
                 .with_protocol_id(shared_launch_options.protocol_id)
                 .with_key(shared_launch_options.key);
 
-            let webtransport_identity = load_certificate_from_files(
-                Path::new(&server_launch_options.webtransport_cert_path),
-                Path::new(&server_launch_options.webtransport_key_path),
-            )
-            .unwrap();
-
-            println!(
-                "Launching Server with Certificate Digest: {}",
-                webtransport_identity.certificate_chain().as_slice()[0]
-                    .hash()
-                    .to_string()
-                    .replace(":", "")
-            );
-
-            let net_configs = vec![
-                ServerNetConfig::Netcode {
-                    // normal udp sockets for desktop
-                    config: server_netcode_config.clone(),
-                    io: ServerIoConfig::from_transport(ServerTransport::UdpSocket(
-                        (
-                            server_launch_options.listen_addr,
-                            server_launch_options.udp_listen_port,
-                        )
-                            .into(),
-                    ))
-                    .with_conditioner(server_launch_options.conditioner.clone()),
-                },
-                ServerNetConfig::Netcode {
-                    // webtransport
-                    config: server_netcode_config.clone(),
-                    io: ServerIoConfig::from_transport(ServerTransport::WebTransportServer {
-                        server_addr: SocketAddr::new(
-                            IpAddr::V4(server_launch_options.listen_addr),
-                            server_launch_options.webtransport_listen_port,
-                        ),
-                        certificate: webtransport_identity,
-                    })
-                    .with_conditioner(server_launch_options.conditioner.clone()),
-                },
-            ];
+                let mut net_configs = vec![
+                    ServerNetConfig::Netcode {
+                        // normal udp sockets for desktop
+                        config: server_netcode_config.clone(),
+                        io: ServerIoConfig::from_transport(ServerTransport::UdpSocket(
+                            (
+                                server_launch_options.listen_addr,
+                                server_launch_options.udp_listen_port,
+                            )
+                                .into(),
+                        ))
+                        .with_conditioner(server_launch_options.conditioner.clone()),
+                    },
+                ];
+                
+                match load_certificate_from_files(
+                    Path::new(&server_launch_options.webtransport_cert_path),
+                    Path::new(&server_launch_options.webtransport_key_path),
+                ) {
+                    Ok(webtransport_identity) => {
+                        println!(
+                            "Launching Server with Certificate Digest: {}",
+                            webtransport_identity.certificate_chain().as_slice()[0]
+                                .hash()
+                                .to_string()
+                                .replace(":", "")
+                        );
+                        
+                        net_configs.push(ServerNetConfig::Netcode {
+                            // webtransport
+                            config: server_netcode_config.clone(),
+                            io: ServerIoConfig::from_transport(ServerTransport::WebTransportServer {
+                                server_addr: SocketAddr::new(
+                                    IpAddr::V4(server_launch_options.listen_addr),
+                                    server_launch_options.webtransport_listen_port,
+                                ),
+                                certificate: webtransport_identity,
+                            })
+                            .with_conditioner(server_launch_options.conditioner.clone()),
+                        });
+                    },
+                    Err(e) => {
+                        eprintln!("WARNING - Skipping WebTransport setup; unable to load cert.pem and key.pem due to {}", e);
+                    }
+                }
 
             let server_config = ServerConfig {
                 shared: shared_config,

@@ -51,6 +51,7 @@ avian3d = {version = "0.2.0", features = [
   "parry-f32",
   "parallel",
   "serialize",
+  "enhanced-determinism"
 ]}
 
 leafwing-input-manager = {git = "https://github.com/Leafwing-Studios/leafwing-input-manager", branch = "main", default-features = false, features = [

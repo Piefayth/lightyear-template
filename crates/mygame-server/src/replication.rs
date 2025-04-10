@@ -6,12 +6,11 @@ use lightyear::prelude::{
     server::{ControlledBy, Lifetime, ServerCommandsExt, SyncTarget},
 };
 use mygame_assets::CurrentLevel;
+use mygame_common::REPLICATION_GROUP_PREDICTED;
 use mygame_protocol::{
     component::Player,
     message::{ClientLevelLoadComplete, Level, ServerWelcome, UnorderedReliable},
 };
-
-use crate::network::REPLICATION_GROUP_PREDICTED;
 
 pub struct ReplicationPlugin;
 impl Plugin for ReplicationPlugin {

@@ -21,8 +21,6 @@ impl Plugin for NetworkPlugin {
     }
 }
 
-pub(crate) const REPLICATION_GROUP_PREDICTED: ReplicationGroup = ReplicationGroup::new_id(42);
-
 fn start_server(mut commands: Commands, mut current_level: ResMut<CurrentLevel>) {
     commands.start_server();
 

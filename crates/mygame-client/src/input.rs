@@ -1,10 +1,9 @@
 use bevy::prelude::*;
 use leafwing_input_manager::{
-    Actionlike,
-    plugin::InputManagerPlugin,
-    prelude::{ActionState, InputMap},
+    plugin::InputManagerPlugin, prelude::{ActionState, InputMap, VirtualDPad}, Actionlike
 };
 use mygame_common::Simulated;
+use mygame_protocol::input::NetworkedInput;
 use serde::{Deserialize, Serialize};
 
 use crate::{game_state::GameState, replication::LocalPlayer, ui::system_menu::SystemMenuState};
@@ -35,6 +34,8 @@ fn add_local_input_map(
 ) {
     for player in &q_local_player {
         commands.entity(player).insert((
+            InputMap::<NetworkedInput>::default()
+                .with_dual_axis(NetworkedInput::Move, VirtualDPad::wasd()),
             InputMap::<LocalInput>::default().with(LocalInput::SystemMenuOrCancel, KeyCode::Escape),
             ActionState::<LocalInput>::default(),
         ));
