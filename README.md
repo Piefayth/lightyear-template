@@ -21,7 +21,7 @@ An opinionated lightyear starter project.
 
 ## Usage
 
-Replace all instances of `mygame` in the names of folders and files with the name of your game. 
+Replace all instances of `mygame` in the names of folders and files with the name of your game. (or not!)
 
 ```
 cargo run client -c 1
