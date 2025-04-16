@@ -13,24 +13,36 @@ use crate::{game_state::GameState, replication::LocalPlayer, ui::system_menu::Sy
 pub struct InputPlugin;
 impl Plugin for InputPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(InputManagerPlugin::<LocalInput>::default())
+        app.add_plugins(InputManagerPlugin::<SystemInput>::default())
+            .add_systems(Startup, spawn_system_input_entity)
             .add_systems(
                 Update,
                 (
-                    add_local_input_map,
+                    add_local_player_input_map,
                     handle_system_menu_or_cancel.run_if(in_state(GameState::Playing)),
                 ),
             );
     }
 }
 
+// Inputs that are not associated with a "Player"
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, Hash, Reflect, Actionlike)]
-pub enum LocalInput {
+pub enum SystemInput {
     #[actionlike(Button)]
     SystemMenuOrCancel,
 }
 
-fn add_local_input_map(
+// System inputs should always be valid, so spawn the map at startup on its own entity
+fn spawn_system_input_entity(
+    mut commands: Commands
+) {
+    commands.spawn((
+        InputMap::<SystemInput>::default().with(SystemInput::SystemMenuOrCancel, KeyCode::Escape),
+        ActionState::<SystemInput>::default(),
+    ));
+}
+
+fn add_local_player_input_map(
     mut commands: Commands,
     q_local_player: Query<Entity, (Simulated, Added<LocalPlayer>)>,
 ) {
@@ -38,19 +50,17 @@ fn add_local_input_map(
         commands.entity(player).insert((
             InputMap::<NetworkedInput>::default()
                 .with_dual_axis(NetworkedInput::Move, VirtualDPad::wasd()),
-            InputMap::<LocalInput>::default().with(LocalInput::SystemMenuOrCancel, KeyCode::Escape),
-            ActionState::<LocalInput>::default(),
         ));
     }
 }
 
 fn handle_system_menu_or_cancel(
-    q_local_inputs: Query<&ActionState<LocalInput>>,
+    q_local_inputs: Query<&ActionState<SystemInput>>,
     system_menu_state: Res<State<SystemMenuState>>,
     mut next_system_menu_state: ResMut<NextState<SystemMenuState>>,
 ) {
     for local_input in &q_local_inputs {
-        if local_input.just_pressed(&LocalInput::SystemMenuOrCancel) {
+        if local_input.just_pressed(&SystemInput::SystemMenuOrCancel) {
             match **system_menu_state {
                 SystemMenuState::Open => next_system_menu_state.set(SystemMenuState::Closed),
                 SystemMenuState::Closed => next_system_menu_state.set(SystemMenuState::Open),

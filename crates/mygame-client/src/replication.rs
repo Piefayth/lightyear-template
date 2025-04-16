@@ -5,6 +5,7 @@ use lightyear::prelude::{
     *,
 };
 use mygame_assets::{CurrentLevel, LevelState};
+use mygame_common::Simulated;
 use mygame_protocol::{
     component::Player,
     message::{ClientLevelLoadComplete, ServerWelcome, UnorderedReliable},
@@ -59,7 +60,7 @@ fn on_server_welcome(
 
 fn await_spawn(
     mut commands: Commands,
-    q_spawned_player: Query<(Entity, &Player), Added<Player>>,
+    q_spawned_player: Query<(Entity, &Player), (Simulated, Added<Player>)>,
     client: Res<ClientConnection>,
 ) {
     for (entity, player) in &q_spawned_player {
