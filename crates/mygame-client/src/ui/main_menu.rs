@@ -39,7 +39,7 @@ pub struct HostButton;
 fn spawn_main_menu_ui(mut commands: Commands, q_main_menu: Query<Entity, With<MainMenu>>) {
     // Despawn any existing copies of the menu
     for entity in &q_main_menu {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 
     commands
@@ -99,12 +99,12 @@ fn despawn_main_menu_buttons(
     #[cfg(feature = "host")] q_host_buttons: Query<Entity, With<HostButton>>,
 ) {
     for entity in &q_connect_buttons {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 
     #[cfg(feature = "host")]
     for entity in &q_host_buttons {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }
 
@@ -128,6 +128,6 @@ fn on_client_begin_connecting(mut q_status_text: Query<&mut Text, With<MainMenuS
 
 fn despawn_main_menu_ui(mut commands: Commands, q_main_menu: Query<Entity, With<MainMenu>>) {
     for entity in &q_main_menu {
-        commands.entity(entity).despawn_recursive();
+        commands.entity(entity).despawn();
     }
 }

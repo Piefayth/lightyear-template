@@ -80,6 +80,6 @@ fn open_system_menu(mut commands: Commands) {
 
 fn close_system_menu(mut commands: Commands, q_system_menu: Query<Entity, With<SystemMenu>>) {
     for system_menu in &q_system_menu {
-        commands.entity(system_menu).despawn_recursive();
+        commands.entity(system_menu).despawn();
     }
 }

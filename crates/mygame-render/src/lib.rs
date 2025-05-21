@@ -1,6 +1,6 @@
 use avian3d::prelude::PhysicsDebugPlugin;
 use bevy::{color::palettes::css::WHITE, prelude::*};
-use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_inspector_egui::{bevy_egui::EguiPlugin, quick::WorldInspectorPlugin};
 
 pub struct RenderPlugin;
 
@@ -13,6 +13,7 @@ impl Plugin for RenderPlugin {
         app.add_plugins((
             camera::CameraPlugin,
             //PhysicsDebugPlugin::default(),
+            EguiPlugin { enable_multipass_for_primary_context: true },
             WorldInspectorPlugin::default(),
         ));
     }

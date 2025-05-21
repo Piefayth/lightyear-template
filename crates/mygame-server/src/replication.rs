@@ -1,9 +1,7 @@
 use avian3d::prelude::{Position, Rotation};
 use bevy::prelude::*;
 use lightyear::prelude::{
-    FromClients, MessageSend, NetworkTarget, ReplicateHierarchy, Replicating, ServerConnectEvent,
-    ServerConnectionManager, ServerDisconnectEvent, ServerReplicate,
-    server::{ControlledBy, Lifetime, ServerCommandsExt, SyncTarget},
+    server::{ControlledBy, Lifetime, ServerCommandsExt, SyncTarget}, DisableReplicateHierarchy, FromClients, MessageSend, NetworkTarget, Replicating, ServerConnectEvent, ServerConnectionManager, ServerDisconnectEvent, ServerReplicate
 };
 use mygame_assets::CurrentLevel;
 use mygame_common::REPLICATION_GROUP_PREDICTED;
@@ -46,12 +44,9 @@ fn on_client_load_complete(
                         prediction: NetworkTarget::Single(ev.from),
                         interpolation: NetworkTarget::AllExceptSingle(ev.from),
                     },
-                    hierarchy: ReplicateHierarchy {
-                        enabled: false,
-                        ..default()
-                    },
                     ..default()
                 },
+                DisableReplicateHierarchy
             ));
         } else {
             warn!(

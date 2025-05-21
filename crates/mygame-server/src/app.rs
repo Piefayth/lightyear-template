@@ -67,7 +67,6 @@ pub fn build_server_app(server_config: ServerConfig, asset_path: String, mode: S
                 },
                 PanicHandlerPlugin,
                 TransformPlugin,
-                HierarchyPlugin,
                 DiagnosticsPlugin,
                 StatesPlugin,
                 ScenePlugin,

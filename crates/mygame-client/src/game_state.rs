@@ -49,6 +49,6 @@ fn cleanup_on_exit_to_menu(
         .send_message::<Reliable, ClientHostRequestShutdown>(&ClientHostRequestShutdown);
 
     for thing in &q_everything {
-        commands.entity(thing).despawn_recursive()
+        commands.entity(thing).despawn()
     }
 }

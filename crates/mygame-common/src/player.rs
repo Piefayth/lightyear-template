@@ -1,9 +1,8 @@
-use avian3d::prelude::{Collider, LinearVelocity, RigidBody, collider};
+use avian3d::prelude::{Collider, LinearVelocity, RigidBody};
 use bevy::{gltf::GltfMesh, prelude::*};
 use leafwing_input_manager::prelude::{ActionState, InputMap, VirtualDPad};
 use lightyear::prelude::{
     client::{Confirmed, Interpolated, Predicted},
-    server::ReplicationTarget,
 };
 use mygame_assets::{LevelState, assets::GlobalAssets};
 use mygame_protocol::{component::Player, input::NetworkedInput};

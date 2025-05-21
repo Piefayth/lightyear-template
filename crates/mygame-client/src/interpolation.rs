@@ -37,7 +37,7 @@ type PosToTransformComponents = (
     &'static mut Transform,
     &'static Position,
     &'static Rotation,
-    Option<&'static Parent>,
+    Option<&'static ChildOf>,
 );
 
 /// Copy the network-interpolated Position values to Transform
@@ -47,7 +47,7 @@ pub fn position_to_transform_for_interpolated(
 ) {
     for (mut transform, pos, rot, parent) in &mut query {
         if let Some(parent) = parent {
-            if let Ok((parent_transform, parent_pos, parent_rot)) = parents.get(**parent) {
+            if let Ok((parent_transform, parent_pos, parent_rot)) = parents.get(parent.0) {
                 let parent_transform = parent_transform.compute_transform();
                 let parent_pos = parent_pos.map_or(parent_transform.translation, |pos| pos.f32());
                 let parent_rot = parent_rot.map_or(parent_transform.rotation, |rot| rot.f32());
